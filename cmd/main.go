@@ -1,37 +1,33 @@
 package main
 
-import "plugin/exceltopb"
+import (
+	"os"
+	"plugin/exceltopb"
 
-const EnumTemplate = ` 
-syntax = "{{.Version}}";
+	"plugin/conf"
 
-package emum;
-
-option go_package = "{{.Path}};
-
-// {{.Template}}
-enum {{.Template}}{
-	{{range $index, $element := .Arry}}
-		{{$element}} = {{$index}}
-	{{end}}
-}
-`
-
-type Info struct {
-	Version  string
-	Path     string
-	Arry     []string
-	Template string
-}
+	"gopkg.in/yaml.v2"
+)
 
 func main() {
-	// i := &Info{
-	// 	Version:  "proto3",
-	// 	Path:     "/gen/path",
-	// 	Arry:     []string{"a", "b"},
-	// 	Template: "test",
-	// }
-	// t, _ := template.New("oo").Parse(EnumTemplate)
-	// t.Execute(os.Stdout, i)
 	exceltopb.ReadExcelSheet("../excel/test.xlsx")
+}
+
+func mustLoadConfig() *conf.Config {
+	path := "setting.yaml"
+	f, err := os.Open(path)
+	if err != nil {
+		panic(err)
+	}
+	var data []byte
+	_, err = f.Read(data)
+	if err != nil {
+		panic(err)
+	}
+	var config *conf.Config
+	err = yaml.Unmarshal(data, config)
+	if err != nil {
+		panic(err)
+	}
+	return config
 }

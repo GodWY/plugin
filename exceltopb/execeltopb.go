@@ -3,12 +3,17 @@ package exceltopb
 import (
 	"fmt"
 	"os"
+	"plugin/conf"
 	self "plugin/exceltopb/template"
 	"strings"
 	"text/template"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
+
+func ReadExcelSheetByConf(conf *conf.Config, path string) {
+	ReadExcelSheet(path)
+}
 
 // 读取excel数据
 func ReadExcelSheet(path string) {
@@ -61,8 +66,7 @@ func ExcelToEnumPb(name string, sheetId int, id, state string, data map[string]s
 	ep.Template = strings.Split(name, "@")[0]
 	ep.Version = "proto3"
 	t, _ := template.New(name).Parse(self.EnumTemplate)
-	t.Execute(os.Stdout, ep)
-}
-
-func WriteToPb() {
+	// t.Execute(os.Stdout, ep)
+	f, _ := os.Create("mytxt.proto")
+	t.Execute(f, t)
 }
